@@ -49,8 +49,17 @@ app.delete("/api/persons/:id", (req, res) => {
 });
 
 app.post("/api/persons", (req, res) => {
-  const newPerson = req.body;
-  newPerson.id = Math.floor(Math.random() * 100000000000000);
+  const tempPerson = req.body;
+  if (!tempPerson.name) return res.status(400).json({ error: "Name missing" });
+  if (!tempPerson.number)
+    return res.status(400).json({ error: "Number missing" });
+  if (persons.find((p) => p.name === tempPerson.name))
+    res.status(400).json({ error: "Name must be unique" });
+  const newPerson = {
+    name: tempPerson.name,
+    number: tempPerson.number,
+    id: Math.floor(Math.random() * 100000000000000),
+  };
   persons.push(newPerson);
   res.json(newPerson);
 });
