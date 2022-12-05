@@ -5,12 +5,15 @@ app.use(cors());
 
 const morgan = require("morgan");
 app.use(express.json());
+
 morgan.token("body", function (req, res) {
   if (req.method === "POST") return JSON.stringify(req.body);
 });
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
+
+app.use(express.static("build"));
 
 let persons = [
   {
