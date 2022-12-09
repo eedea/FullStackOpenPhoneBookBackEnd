@@ -9,7 +9,8 @@ const morgan = require("morgan");
 app.use(express.json());
 
 morgan.token("body", function (req, res) {
-  if (req.method === "POST") return JSON.stringify(req.body);
+  // if (req.method === "POST")
+  return JSON.stringify(req.body);
 });
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
@@ -73,14 +74,33 @@ app.post("/api/persons", async (req, res) => {
   const { name, number } = req.body;
   if (!name) return res.status(400).json({ error: "Name missing" });
   if (!number) return res.status(400).json({ error: "Number missing" });
-  // if (persons.find((p) => p.name === tempPerson.name))
-  //   res.status(400).json({ error: "Name must be unique" });
+  const person = await Person.findOne({ name });
+  if (person) return res.status(400).json({ error: "Name must be unique" });
   const newPerson = new Person({
     name,
     number,
   });
   await newPerson.save();
   res.json(newPerson);
+});
+
+app.put("/api/persons/:id", async (req, res, next) => {
+  const { number } = req.body;
+  if (!number) return res.status(400).json({ error: "Number missing" });
+  try {
+    const updatedPerson = await Person.findByIdAndUpdate(
+      req.params.id,
+      { number },
+      { new: true }
+    );
+    if (updatedPerson) {
+      res.json(updatedPerson);
+    } else {
+      res.status(404).end();
+    }
+  } catch (err) {
+    next(err);
+  }
 });
 
 const errorHandeler = (err, req, res, next) => {
