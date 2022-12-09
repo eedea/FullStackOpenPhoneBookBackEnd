@@ -60,9 +60,13 @@ app.get("/api/persons/:id", (req, res) => {
   else res.status(404).end();
 });
 
-app.delete("/api/persons/:id", async (req, res) => {
-  await Person.findByIdAndRemove(req.params.id);
-  res.status(204).end();
+app.delete("/api/persons/:id", async (req, res, next) => {
+  try {
+    await Person.findByIdAndRemove(req.params.id);
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.post("/api/persons", async (req, res) => {
@@ -78,6 +82,18 @@ app.post("/api/persons", async (req, res) => {
   await newPerson.save();
   res.json(newPerson);
 });
+
+const errorHandeler = (err, req, res, next) => {
+  console.error(err.message);
+
+  if (err.name === "CastError") {
+    return res.status(400).send({ error: "malformatted id" });
+  }
+
+  next(err);
+};
+
+app.use(errorHandeler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
