@@ -66,19 +66,17 @@ app.delete("/api/persons/:id", (req, res) => {
   res.status(204).end();
 });
 
-app.post("/api/persons", (req, res) => {
-  const tempPerson = req.body;
-  if (!tempPerson.name) return res.status(400).json({ error: "Name missing" });
-  if (!tempPerson.number)
-    return res.status(400).json({ error: "Number missing" });
-  if (persons.find((p) => p.name === tempPerson.name))
-    res.status(400).json({ error: "Name must be unique" });
-  const newPerson = {
-    name: tempPerson.name,
-    number: tempPerson.number,
-    id: Math.floor(Math.random() * 100000000000000),
-  };
-  persons.push(newPerson);
+app.post("/api/persons", async (req, res) => {
+  const { name, number } = req.body;
+  if (!name) return res.status(400).json({ error: "Name missing" });
+  if (!number) return res.status(400).json({ error: "Number missing" });
+  // if (persons.find((p) => p.name === tempPerson.name))
+  //   res.status(400).json({ error: "Name must be unique" });
+  const newPerson = new Person({
+    name,
+    number,
+  });
+  await newPerson.save();
   res.json(newPerson);
 });
 
