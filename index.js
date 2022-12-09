@@ -54,11 +54,17 @@ app.get("/api/persons", async (req, res) => {
   res.json(people);
 });
 
-app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const person = persons.find((p) => p.id === id);
-  if (person) res.json(person);
-  else res.status(404).end();
+app.get("/api/persons/:id", async (req, res, next) => {
+  try {
+    const person = await Person.findById(req.params.id);
+    if (person) {
+      res.json(person);
+    } else {
+      res.status(404).end();
+    }
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.delete("/api/persons/:id", async (req, res, next) => {
