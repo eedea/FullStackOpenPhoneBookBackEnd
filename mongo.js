@@ -21,7 +21,7 @@ if (process.argv.length === 3) {
   mongoose
     .set("strictQuery", true)
     .connect(mongodbURL)
-    .then((result) => {
+    .then(() => {
       return Person.find();
     })
     .then((people) => {
@@ -36,7 +36,7 @@ if (process.argv.length === 3) {
   mongoose
     .set("strictQuery", true)
     .connect(mongodbURL)
-    .then((result) => {
+    .then(() => {
       const name = process.argv[3];
       const number = process.argv[4];
       const person = new Person({ name, number });
