@@ -1,3 +1,2 @@
-Deploied on:
-
+Full Stack Link:
 https://fsophonebook.onrender.com
